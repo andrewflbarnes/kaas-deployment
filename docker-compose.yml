@@ -1,0 +1,49 @@
+version: "3"
+services:
+  kaas-database:
+    image: postgres:10
+    ports:
+    - "${db_port}:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+
+  kaas-database-admin:
+    image: dpage/pgadmin4
+    ports:
+    - "${db_ui_port}:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: andrewflbarnes@hotmail.co.uk
+      PGADMIN_DEFAULT_PASSWORD: postgres
+
+  kaas-backend:
+    image: kaas/results-service
+    deploy:
+      replicas: 2
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+    - "${backend_port}:8080"
+    volumes:
+    - "./docker/backend/application.properties:/app/application.properties"
+    - "./docker/backend/database.properties:/app/database.properties"
+    depends_on:
+    - kaas-database
+
+  kaas-frontend:
+    image: kaas/site
+    ports:
+    - "${frontend_port}:80"
+
+  kaas-proxy:
+    image: kaas/proxy
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+    - "${proxy_port}:80"
+    depends_on:
+    - kaas-frontend
+    - kaas-backend
