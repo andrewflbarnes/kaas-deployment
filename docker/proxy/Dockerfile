@@ -2,7 +2,7 @@ FROM nginx:stable-alpine
 
 WORKDIR /etc/nginx
 
-COPY docker/proxy/nginx.conf .
+COPY nginx.conf .
 
 EXPOSE 80
 

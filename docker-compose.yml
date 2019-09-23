@@ -19,11 +19,6 @@ services:
 
   kaas-backend:
     image: kaas/results-service
-    deploy:
-      replicas: 2
-    build:
-      context: .
-      dockerfile: Dockerfile
     ports:
     - "${backend_port}:8080"
     volumes:
@@ -40,7 +35,7 @@ services:
   kaas-proxy:
     image: kaas/proxy
     build:
-      context: .
+      context: docker/proxy
       dockerfile: Dockerfile
     ports:
     - "${proxy_port}:80"
