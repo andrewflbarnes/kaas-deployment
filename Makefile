@@ -7,6 +7,7 @@ export $(shell sed 's/=.*//' .env)
 .PHONY: all kill
 .PHONY: start stop
 .PHONY: db-clean db-build
+.PHONY: backend
 
 help: help-main help-nginx
 
@@ -37,13 +38,25 @@ kill:
 	docker-compose rm -sf
 
 define db-op
-	cd ../kings-results-service; \
+	cd tmp/backend; \
 		mvn -pl :database-scripts -Ddb.port=$$db_port -Pdb-$(strip $1)
 endef
 
-db-build:
+db-build: backend
 	$(call db-op, migrate)
 	$(call db-op, load-test)
 
-db-clean:
+db-clean: backend
 	$(call db-op, clean)
+
+tmp:
+	mkdir tmp
+
+backend: tmp
+	@if [ ! -d tmp/backend ]; then \
+		git clone git@github.com:andrewflbarnes/kings-results-service tmp/backend; \
+	else \
+		echo backend already cloned; \
+	fi
+	@echo checkout master
+	@cd tmp/backend && git checkout master
