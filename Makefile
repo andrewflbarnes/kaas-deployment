@@ -24,7 +24,7 @@ stop:
 
 define db-op
 	cd ../kings-results-service; \
-		echo mvn -pl :database-scripts -Ddb.port=$$db_port -Pdb-$1
+		mvn -pl :database-scripts -Ddb.port=$$db_port -Pdb-$(strip $1)
 endef
 
 db-build:
