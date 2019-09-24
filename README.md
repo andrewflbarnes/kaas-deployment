@@ -2,22 +2,22 @@
 For deploying KAAS
 
 ## Docker images
-kaas/site should be built from kaas-site-react
+andrewflbarnes/kaas-frontend should be built from kaas-site-react
 ```bash
 rm -rf build
 npm run build
-docker build -t kaas/site .
+docker build -t andrewflbarnes/kaas-frontend
 ```
 
-kaas/results-service should be built from kings-results-service
+andrewflbarnes/kaas-backend should be built from kings-results-service
 ```bash
 mvn clean package -Dmaven.test.skip
-docker build -t kaas/results-service .
+docker build -t andrewflbarnes/kaas-backend .
 ```
 
-kaas/proxy should be built locally
+andrewflbarnes/kaas-proxy should be built locally
 ```bash
-docker build -t kaas/proxy .
+docker build -t andrewflbarnes/kaas-proxy docker/proxy
 ```
 
 ## Database
