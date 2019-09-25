@@ -3,45 +3,57 @@
 include .env
 export $(shell sed 's/=.*//' .env)
 
-.PHONY: help help-main help-nginx
-.PHONY: all kill
-.PHONY: start stop
-.PHONY: db-clean db-build
-.PHONY: backend
+.DEFAULT_GOAL = help
 
-help: help-main help-nginx
+tmpdir = tmp
+docker_opts = -f docker/docker-compose.yml
+backend_local = $(tmpdir)/backend
+backend_repo = git@github.com:andrewflbarnes/kings-results-service
 
-help-main:
-	@echo "  make help      - show this help text"
-	@echo "  make start     - an alias for docker-compose up -d"
-	@echo "  make stop      - an alias for docker-compose stop"
-	@echo "  make kill      - an alias for docker-compose rm -sf"
-	@echo "  ** The below commands are dependent on kings-results-service being cloned on .. **"
-	@echo "  make db-clean  - clears down the kaas-database"
-	@echo "  make db-build  - provisions the kaas-database and loads it with test data"
-	@echo "  make all       - an alias for start and db-build"
+VPATH = .:$(tmpdir)
 
-help-nginx:
-	@echo "  The nginx reverse proxy will only redirect to the kaas services if the target server"
-	@echo "  is kaas.com"
-	@echo "  Ensure this is added to your hosts file or modify the nginx.conf"
+.PHONY: help
+help:
+	@echo "  make help           - show this help text"
+	@echo "  make build          - builds the kaas-proxy in docker/proxy"
+	@echo "  make all            - an alias for start and db-build"
+	@echo "  make start          - an alias for docker-compose up -d"
+	@echo "  make status         - an alias for docker-compose ps"
+	@echo "  make stop           - an alias for docker-compose stop"
+	@echo "  make kill           - an alias for docker-compose rm -sf"
+	@echo "  make backend-update - pulls the latest version of the backend used for db commands"
+	@echo "  make db-clean       - clears down the kaas-database"
+	@echo "  make db-build       - provisions the kaas-database and loads it with test data"
 
-all: start db-build help-nginx
+.PHONY: build
+build:
+	docker build -t andrewflbarnes/kaas-proxy docker/proxy
 
-start:
-	docker-compose up -d
+.PHONY: all start status stop kill
+all: start db-build
 
-stop:
-	docker-compose stop
-
-kill:
-	docker-compose rm -sf
-
-define db-op
-	cd tmp/backend; \
-		mvn -pl :database-scripts -Ddb.port=$$db_port -Pdb-$(strip $1)
+define docker
+docker-compose $(docker_opts) $1
 endef
 
+start:
+	$(call docker, up -d)
+
+status:
+	$(call docker, ps)
+
+stop:
+	$(call docker, stop)
+
+kill:
+	$(call docker, rm -sf)
+
+define db-op
+cd $(backend_local); \
+mvn -pl :database-scripts -Ddb.port=$$db_port -Pdb-$(strip $1)
+endef
+
+.PHONY: db-clean db-build
 db-build: backend
 	$(call db-op, migrate)
 	$(call db-op, load-test)
@@ -49,14 +61,9 @@ db-build: backend
 db-clean: backend
 	$(call db-op, clean)
 
-tmp:
-	mkdir tmp
+.PHONY: backend-update
+backend-update: backend
+	cd $(backend_local) && git checkout master && git pull
 
-backend: tmp
-	@if [ ! -d tmp/backend ]; then \
-		git clone git@github.com:andrewflbarnes/kings-results-service tmp/backend; \
-	else \
-		echo backend already cloned; \
-	fi
-	@echo checkout master
-	@cd tmp/backend && git checkout master
+backend:
+	git clone $($@_repo) $(tmpdir)/$@
