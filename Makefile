@@ -12,26 +12,21 @@ backend_local = $(tmpdir)/backend
 backend_repo = git@github.com:andrewflbarnes/kings-results-service
 
 VPATH = .:$(tmpdir)
-
-define helptext
-echo " \
- make help           - show this help text \
-\n make clean          - cleans any temporary directories \
-\n make build          - builds the kaas-proxy in docker/proxy \
-\n make all            - an alias for start and db-build \
-\n make start          - an alias for docker-compose up -d \
-\n make status         - an alias for docker-compose ps \
-\n make stop           - an alias for docker-compose stop \
-\n make kill           - an alias for docker-compose rm -sf \
-\n make backend-update - pulls the latest version of the backend used for db commands \
-\n make db-clean       - clears down the kaas-database \
-\n make db-build       - provisions the kaas-database and loads it with test data \
-"
-endef
+SHELL = /bin/bash
 
 .PHONY: help
 help:
-	@$(call helptext)
+	echo " help           - show this help text"
+	echo " clean          - cleans any temporary directories"
+	echo " build          - builds the kaas-proxy in docker/proxy"
+	echo " all            - an alias for start and db-build"
+	echo " start          - an alias for docker-compose up -d"
+	echo " status         - an alias for docker-compose ps"
+	echo " stop           - an alias for docker-compose stop"
+	echo " kill           - an alias for docker-compose rm -sf"
+	echo " backend-update - pulls the latest version of the backend used for db commands"
+	echo " db-clean       - clears down the kaas-database"
+	echo " db-build       - provisions the kaas-database and loads it with test data"
 
 .PHONY: clean
 clean:
