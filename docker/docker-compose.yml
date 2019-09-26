@@ -25,8 +25,8 @@ services:
     ports:
     - "${backend_port}:8080"
     volumes:
-    - "./docker/backend/application.properties:/app/application.properties"
-    - "./docker/backend/database.properties:/app/database.properties"
+    - "./backend/application.properties:/app/application.properties"
+    - "./backend/database.properties:/app/database.properties"
     depends_on:
     - kaas-database
 
