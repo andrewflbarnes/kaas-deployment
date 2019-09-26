@@ -1,9 +1,10 @@
-#!/usr/bin/env make
+#!/usr/bin/env make -f
 
 include .env
 export $(shell sed 's/=.*//' .env)
 
 .DEFAULT_GOAL = help
+.SILENT:
 
 tmpdir = tmp
 docker_opts = -f docker/docker-compose.yml
@@ -12,18 +13,29 @@ backend_repo = git@github.com:andrewflbarnes/kings-results-service
 
 VPATH = .:$(tmpdir)
 
+define helptext
+echo " \
+ make help           - show this help text \
+\n make clean          - cleans any temporary directories \
+\n make build          - builds the kaas-proxy in docker/proxy \
+\n make all            - an alias for start and db-build \
+\n make start          - an alias for docker-compose up -d \
+\n make status         - an alias for docker-compose ps \
+\n make stop           - an alias for docker-compose stop \
+\n make kill           - an alias for docker-compose rm -sf \
+\n make backend-update - pulls the latest version of the backend used for db commands \
+\n make db-clean       - clears down the kaas-database \
+\n make db-build       - provisions the kaas-database and loads it with test data \
+"
+endef
+
 .PHONY: help
 help:
-	@echo "  make help           - show this help text"
-	@echo "  make build          - builds the kaas-proxy in docker/proxy"
-	@echo "  make all            - an alias for start and db-build"
-	@echo "  make start          - an alias for docker-compose up -d"
-	@echo "  make status         - an alias for docker-compose ps"
-	@echo "  make stop           - an alias for docker-compose stop"
-	@echo "  make kill           - an alias for docker-compose rm -sf"
-	@echo "  make backend-update - pulls the latest version of the backend used for db commands"
-	@echo "  make db-clean       - clears down the kaas-database"
-	@echo "  make db-build       - provisions the kaas-database and loads it with test data"
+	@$(call helptext)
+
+.PHONY: clean
+clean:
+	rm -rf $(tmpdir)
 
 .PHONY: build
 build:
