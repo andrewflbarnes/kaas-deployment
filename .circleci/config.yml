@@ -31,7 +31,6 @@ jobs:
     - run:
         name: Test the KAAS proxy is working
         command: |
-          docker exec kaas-proxy wget -SO- localhost:80/api/team
           docker exec kaas-proxy wget -SO- localhost:80/api/team | grep SKUM
     - run:
         name: Get status and logs if error

@@ -4,14 +4,15 @@ include .env
 export $(shell sed 's/=.*//' .env)
 
 .DEFAULT_GOAL = help
-.SILENT:
 
 tmpdir = tmp
 backend_local = $(tmpdir)/backend
 backend_repo = git@github.com:andrewflbarnes/kings-results-service
+
 ifeq ($(CIRCLECI),true)
 docker_opts = -f .circleci/docker-compose.yml
 else
+.SILENT:
 docker_opts = -f docker/docker-compose.yml
 endif
 
