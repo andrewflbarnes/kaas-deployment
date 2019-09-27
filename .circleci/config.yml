@@ -1,0 +1,45 @@
+version: 2
+
+project-config:
+  caching:
+  - &cache_dependencies ${CACHE_VERSION}-dependencies
+  - cache_default_paths: &cache_default_paths
+    - ~/.m2
+  docker:
+  # Latest 181 version has a bug with surefire
+  - docker_build: &docker_build
+    - image: circleci/openjdk:8u171-jdk
+
+jobs:
+  verify-deploy:
+    docker: *docker_build
+    steps:
+    - checkout
+    - restore_cache:
+        keys:
+        - *cache_dependencies
+    - run:
+        name: Start the KAAS deployment
+        command: make start
+    - run:
+        name: Provision the KAAS database
+        command: make db-build
+    - run:
+        name: Test the KAAS proxy is working
+        command: curl localhost:80/api/team | grep SKUM
+    - run:
+        name: Stop the KAAS deployment
+        when: always
+        command: make kill
+    - save_cache:
+        paths: *cache_default_paths
+        key: *cache_dependencies
+
+workflows:
+  version: 2
+  verify-deploy:
+    jobs:
+    - verify-deploy
+      filters:
+        branches:
+          only: master
