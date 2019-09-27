@@ -39,7 +39,7 @@ workflows:
   version: 2
   verify-deploy:
     jobs:
-    - verify-deploy
+    - verify-deploy:
       filters:
         branches:
           only: master
