@@ -28,10 +28,14 @@ jobs:
     - run:
         name: Test the KAAS proxy is working
         command: |
-          make status
-          docker-compose -f docker/docker-compose.yml logs
           docker exec kaas-proxy wget -SO- localhost:80/api/team
           docker exec kaas-proxy wget -SO- localhost:80/api/team | grep SKUM
+    - run:
+        name: Get status and logs if error
+        when: on_fail
+        command: |
+          make status
+          docker-compose -f docker/docker-compose.yml logs
     - run:
         name: Stop the KAAS deployment
         when: always
