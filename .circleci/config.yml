@@ -15,12 +15,13 @@ jobs:
     docker: *docker_build
     steps:
     - checkout
-    - restore_cache:
-        keys:
-        - *cache_dependencies
+    - setup_remote_docker
     - run:
         name: Start the KAAS deployment
         command: make start
+    - restore_cache:
+        keys:
+        - *cache_dependencies
     - run:
         name: Provision the KAAS database
         command: make db-build
