@@ -1,4 +1,4 @@
-version: "3"
+version: "3.5"
 services:
   kaas-database:
     container_name: kaas-database
@@ -44,3 +44,7 @@ services:
     depends_on:
     - kaas-frontend
     - kaas-backend
+
+networks:
+  default:
+    name: kaas-deploy
