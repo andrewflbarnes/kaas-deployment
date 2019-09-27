@@ -27,7 +27,9 @@ jobs:
         command: make db-build
     - run:
         name: Test the KAAS proxy is working
-        command: curl localhost:80/api/team | grep SKUM
+        command: >
+          docker-compose -f docker/docker-compose.yml exec kaas-proxy
+          sh -c "wget -O- localhost:80/api/team 2>/dev/null" | grep SKUM
     - run:
         name: Stop the KAAS deployment
         when: always
