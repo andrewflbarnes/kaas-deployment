@@ -1,0 +1,7 @@
+# to be run on maven:3-jdk-8-alpine
+apk add git;
+cd ~;
+git clone https://github.com/andrewflbarnes/kings-results-service.git;
+cd kings-results-service;
+mvn -Ddb.port=5432 -Ddb.host=kaas-database -pl :database-scripts -Pdb-migrate;
+mvn -Ddb.port=5432 -Ddb.host=kaas-database -pl :database-scripts -Pdb-load-test;

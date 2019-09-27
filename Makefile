@@ -62,8 +62,17 @@ endef
 
 .PHONY: db-clean db-build
 db-build: backend
+ifneq ($(CIRCLECI),true)
 	$(call db-op, migrate)
 	$(call db-op, load-test)
+else
+	docker run \
+		--name provision \
+		--network kaas-deploy \
+		--rm \
+		maven:3-jdk-8-alpine \
+		bash -c "$$(cat docker/database/provision)"
+endif
 
 db-clean: backend
 	$(call db-op, clean)
@@ -73,4 +82,6 @@ backend-update: backend
 	cd $(backend_local) && git checkout master && git pull
 
 backend:
+ifneq ($(CIRCLECI),true)
 	git clone $($@_repo) $(tmpdir)/$@
+endif
