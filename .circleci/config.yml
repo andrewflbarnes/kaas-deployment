@@ -17,6 +17,9 @@ jobs:
     - checkout
     - setup_remote_docker
     - run:
+        name: Prebuild images which usually rely on volumes
+        command: make circleci
+    - run:
         name: Start the KAAS deployment
         command: make start
     - restore_cache:

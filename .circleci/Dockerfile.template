@@ -1,0 +1,8 @@
+FROM andrewflbarnes/kaas-backend:##version##
+
+WORKDIR /app
+
+COPY backend/application.properties .
+COPY backend/database.properties .
+
+ENTRYPOINT ["java", "-jar", "results-service.jar"]

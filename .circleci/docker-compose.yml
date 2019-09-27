@@ -1,0 +1,47 @@
+version: "3.5"
+services:
+  kaas-database:
+    container_name: kaas-database
+    image: postgres:10
+    ports:
+    - "${db_port}:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+
+  kaas-database-admin:
+    container_name: kaas-database-admin
+    image: dpage/pgadmin4
+    ports:
+    - "${db_ui_port}:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: andrewflbarnes@hotmail.co.uk
+      PGADMIN_DEFAULT_PASSWORD: postgres
+
+  kaas-backend:
+    container_name: kaas-backend
+    image: andrewflbarnes/kaas-backend:${version}
+    ports:
+    - "${backend_port}:8080"
+    depends_on:
+    - kaas-database
+
+  kaas-frontend:
+    container_name: kaas-frontend
+    image: andrewflbarnes/kaas-frontend:${version}
+    ports:
+    - "${frontend_port}:80"
+
+  kaas-proxy:
+    container_name: kaas-proxy
+    image: andrewflbarnes/kaas-proxy:${version}
+    ports:
+    - "${proxy_port}:80"
+    depends_on:
+    - kaas-frontend
+    - kaas-backend
+
+networks:
+  default:
+    name: kaas-deploy

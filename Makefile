@@ -7,9 +7,13 @@ export $(shell sed 's/=.*//' .env)
 .SILENT:
 
 tmpdir = tmp
-docker_opts = -f docker/docker-compose.yml
 backend_local = $(tmpdir)/backend
 backend_repo = git@github.com:andrewflbarnes/kings-results-service
+ifeq ($(CIRCLECI),true)
+docker_opts = -f .circleci/docker-compose.yml
+else
+docker_opts = -f docker/docker-compose.yml
+endif
 
 VPATH = .:$(tmpdir)
 SHELL = /bin/bash
@@ -32,9 +36,13 @@ help:
 clean:
 	rm -rf $(tmpdir)
 
-.PHONY: build
+.PHONY: build circleci
 build:
 	docker build -t andrewflbarnes/kaas-proxy docker/proxy
+
+circleci:
+	sed 's/##version##/$(version)/g' .circleci/Dockerfile.template > .circleci/Dockerfile
+	docker build -t andrewflbarnes/kaas-backend:$(version) -f .circleci/Dockerfile docker
 
 .PHONY: all start status stop kill
 all: start db-build
