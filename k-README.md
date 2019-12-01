@@ -28,6 +28,12 @@ make k-proxy
 ```
 This will forward port 80 locally to port 80 on kaas-proxy
 
-Now add kaas.com as `127.0.0.1` to `/etc/hosts` and visit `http://kaas.com` in a browser to see the website!
+Now add kaas.com as `127.0.0.1` to `/etc/hosts`
+```bash
+sudo sed -i '' '
+  /127.0.0.1/s/$/ kaas.com/
+' /etc/hosts
+```
+and visit `http://kaas.com` in a browser to see the website!
 
 NOTE: visiting localhost:80 will cause the reverse proxy to present the default nginx welcome page

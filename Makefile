@@ -95,6 +95,10 @@ ifneq ($(CIRCLECI),true)
 	git clone $($@_repo) $(tmpdir)/$@
 endif
 
+
+
+## K U B E R N E T E S
+
 define k-db-op
 	cd tmp/backend; \
 		mvn -pl :database-scripts \
@@ -103,19 +107,23 @@ define k-db-op
 			-Pdb-$(strip $1)
 endef
 
+.PHONY: k-secret
 k-secret:
 	kubectl create secret generic kaas-backend-properties \
 		--from-file docker/backend/database.properties \
 		--from-file docker/backend/application.properties
 
-k-proxy:
-	sudo kubectl port-forward svc/kaas-proxy 80:80
-
+.PHONY: k-deploy
 k-deploy:
 	kubectl apply -f kubernetes/01-services
 	kubectl apply -f kubernetes/02-deployments
 
-k-deploy-2:
+.PHONY: k-deploy-2
+k-deploy-2: backend
 	$(call k-db-op, migrate)
 	$(call k-db-op, load-test)
 	kubectl apply -f kubernetes/03-deployments
+
+.PHONY: k-proxy
+k-proxy:
+	sudo kubectl port-forward svc/kaas-proxy 80:80
