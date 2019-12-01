@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kaas-frontend
+  labels:
+    app: kaas-frontend
+    component: nginx
+spec:
+  ports:
+  - name: ui
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: kaas-frontend
+  sessionAffinity: None
+  type: NodePort

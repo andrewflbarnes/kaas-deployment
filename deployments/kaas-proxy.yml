@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kaas-proxy
+  labels:
+    app: kaas-proxy
+    component: nginx
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kaas-proxy
+  template:
+    metadata:
+      labels:
+        app: kaas-proxy
+    spec:
+      containers:
+      - name: kaas-proxy
+        image: andrewflbarnes/kaas-proxy:0.0.1
+        ports:
+        - containerPort: 80

@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kaas-database
+  labels:
+    app: kaas-database
+    component: database
+spec:
+  ports:
+  - name: jdbc
+    port: 5432
+    protocol: TCP
+    targetPort: 5432
+  selector:
+    app: kaas-database
+  sessionAffinity: None
+  type: NodePort

@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kaas-backend
+  labels:
+    app: kaas-backend
+    component: springboot
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kaas-backend
+  template:
+    metadata:
+      labels:
+        app: kaas-backend
+    spec:
+      containers:
+      - name: kaas-backend
+        image: andrewflbarnes/kaas-backend:0.0.1
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - mountPath: /boom
+          name: properties
+        - mountPath: /app/application.properties
+          name: properties
+          subPath: application.properties
+        - mountPath: /app/database.properties
+          name: properties
+          subPath: database.properties
+
+      volumes:
+      - name: properties
+        secret:
+          secretName: kaas-backend-properties

@@ -94,3 +94,8 @@ backend:
 ifneq ($(CIRCLECI),true)
 	git clone $($@_repo) $(tmpdir)/$@
 endif
+
+k-secret:
+	kubectl create secret generic kaas-backend-properties \
+		--from-file docker/backend/database.properties \
+		--from-file docker/backend/application.properties

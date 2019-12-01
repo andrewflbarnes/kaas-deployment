@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kaas-database-admin
+  labels:
+    app: kaas-database-admin
+    component: dbadmin
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kaas-database-admin
+  template:
+    metadata:
+      labels:
+        app: kaas-database-admin
+    spec:
+      containers:
+      - name: kaas-database-admin
+        image: dpage/pgadmin4
+        ports:
+        - containerPort: 80
+        env:
+        - name: PGADMIN_DEFAULT_EMAIL
+          value: andrewflbarnes@hotmail.co.uk
+        - name: PGADMIN_DEFAULT_PASSWORD
+          value: postgres

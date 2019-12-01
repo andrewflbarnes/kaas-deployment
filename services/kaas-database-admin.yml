@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: kaas-database-admin
+  labels:
+    app: kaas-database-admin
+    component: database-admin
+spec:
+  ports:
+  - name: ui
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: kaas-database-admin
+  sessionAffinity: None
+  type: NodePort
